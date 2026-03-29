@@ -711,32 +711,78 @@ python app.py
 ```
 ## 7. Đánh giá kết quả và Thảo luận
 
-*(Phần này đã được tinh chỉnh để nhất quán với project)*
+### 7.1. Hệ thống thang đo đánh giá (Evaluation Metrics)
 
-### 7.1. Bảng so sánh hiệu suất
+Để đánh giá một cách khách quan, toàn diện và khoa học hiệu suất của các mô hình, nghiên cứu sử dụng bộ chỉ số tiêu chuẩn trong bài toán phân loại đa lớp:
 
-| Mô hình                        | Accuracy | F1-Score | Precision | Recall  |
-|--------------------------------|----------|----------|-----------|---------|
-| PhoBERT (SOTA Transformer)     | **96.70%** | **96.69%** | **96.73%** | **96.70%** |
-| Random Forest                  | 93.67%   | 93.62%   | 93.70%    | 93.67%  |
-| GRU                            | 93.35%   | 93.33%   | 93.35%    | 93.35%  |
-| Bidirectional LSTM             | 92.14%   | 92.08%   | 92.32%    | 92.14%  |
-| ... (các mô hình còn lại)      | ...      | ...      | ...       | ...     |
+- **Accuracy (Độ chính xác toàn cục)**:  
+  \[
+  \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+  \]
 
-PhoBERT vượt trội toàn diện nhờ cơ chế Attention hai chiều và kiến thức pre-trained trên corpus tiếng Việt phong phú.
+- **Precision (Độ chuẩn xác)**:  
+  \[
+  \text{Precision} = \frac{TP}{TP + FP}
+  \]
 
-### 7.2. Phân tích K-Fold Cross Validation
+- **Recall (Độ phủ / Độ nhạy)**:  
+  \[
+  \text{Recall} = \frac{TP}{TP + FN}
+  \]
 
-![SVM – Training vs Validation Accuracy per Fold](img/5-Hinh53.png)  
-*Hình 7.1: SVM model*
+- **F1-Score (Trung bình điều hòa)**:  
+  \[
+  F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+  \]
 
-![Logistic Regression – Training vs Validation Accuracy per Fold](img/4EDML.png)  
-*Hình 7.2: Logistic Regression model*
+Tất cả các chỉ số đều được tính theo chế độ **weighted average** nhằm phản ánh chính xác sự phân bố của ba lớp cảm xúc. Đặc biệt, với dữ liệu ban đầu có sự mất cân bằng nghiêm trọng (lớp Neutral chỉ chiếm khoảng 4,3 %), **F1-Score** được coi là thước đo quan trọng nhất vì nó cân bằng giữa Precision và Recall, giúp tránh tình trạng mô hình thiên vị về các lớp đa số.
 
-![Random Forest – Training vs Validation Accuracy per Fold](img/1q9nk.png)  
-*Hình 7.3: Random Forest model*
+**Hình 7.1**: Biểu đồ phân bố nhãn cảm xúc ban đầu và chủ đề (3.png)  
+**Hình 7.2**: Biểu đồ phân bố nhãn sau khi oversampling (4.png)
 
-![Ensemble – Training vs Validation Accuracy per Fold](img/x8h7W.png)  
-*Hình 7.4: Machine Learning Ensemble model*
+### 7.2. Bảng so sánh hiệu suất tổng thể
 
----
+Sau khi huấn luyện, tinh chỉnh siêu tham số và kiểm tra trên tập test độc lập, kết quả được tổng hợp như sau:
+
+| Mô hình                          | Accuracy   | F1-Score   | Precision  | Recall     |
+|----------------------------------|------------|------------|------------|------------|
+| **PhoBERT (SOTA Transformer)**   | **96.70%** | **96.69%** | **96.73%** | **96.70%** |
+| Random Forest                    | 93.67%     | 93.62%     | 93.70%     | 93.67%     |
+| GRU                              | 93.35%     | 93.33%     | 93.35%     | 93.35%     |
+| Bidirectional LSTM               | 92.14%     | 92.08%     | 92.32%     | 92.14%     |
+| Stacked ML Ensemble              | 90.58%     | 90.57%     | 90.68%     | 90.58%     |
+| Support Vector Machine (SVM)     | 90.58%     | 90.55%     | 90.80%     | 90.58%     |
+| Fully Connected Layers           | 90.05%     | 90.00%     | 90.12%     | 90.05%     |
+| Logistic Regression (Baseline)   | 89.70%     | 89.69%     | 90.01%     | 89.70%     |
+
+PhoBERT vượt trội tuyệt đối ở mọi chỉ số, khẳng định vị thế **State-of-the-Art (SOTA)** trong bài toán phân tích cảm xúc tiếng Việt.
+
+**Hình 7.3**: Biểu đồ so sánh hiệu suất tổng thể của tất cả các mô hình (17.png)
+
+### 7.3. Phân tích chi tiết hiệu suất PhoBERT
+
+PhoBERT không chỉ dẫn đầu về điểm số mà còn thể hiện sự ổn định vượt trội qua quy trình đánh giá chéo **Stratified K-Fold (5 folds)**. Mô hình được fine-tune từ backbone `vinai/phobert-base` – một mô hình Transformer được pre-trained trên hơn 20 GB văn bản tiếng Việt – và sử dụng cơ chế **Multi-Head Self-Attention** để nắm bắt mối quan hệ ngữ nghĩa hai chiều giữa các từ, kể cả các từ ghép phức tạp đặc trưng của tiếng Việt.
+
+**Ưu điểm nổi bật của PhoBERT**:
+
+- **Khả năng hiểu ngữ cảnh sâu sắc**: Khác với các mô hình truyền thống dựa trên Bag-of-Words (như Random Forest hay SVM) chỉ đếm tần suất từ, PhoBERT xử lý toàn bộ chuỗi văn bản cùng một lúc, nhận diện chính xác mỉa mai, phủ định kép, cấu trúc đảo ngữ và các sắc thái cảm xúc tinh tế.
+- **Tận dụng tối đa kiến thức pre-trained**: Nhờ đã học sẵn ngữ nghĩa tiếng Việt từ corpus khổng lồ, mô hình chỉ cần fine-tune với learning rate rất nhỏ (2e-5) đã đạt hiệu suất cao ngay từ epoch đầu tiên.
+- **Kháng nhiễu vượt trội**: Xử lý xuất sắc lỗi chính tả, emoji, từ viết tắt và cách diễn đạt không chuẩn thường gặp trong phản hồi của sinh viên.
+- **Khả năng khái quát hóa cao**: Duy trì accuracy trên 94 % khi kiểm tra trên dữ liệu thực tế ngẫu nhiên, không bị overfitting dù lớp Neutral ban đầu chiếm tỷ lệ cực kỳ nhỏ.
+
+**Hình 7.4**: Biểu đồ Training vs Validation Accuracy per Fold của Logistic Regression (5.png)  
+**Hình 7.5**: Biểu đồ Training vs Validation Accuracy per Fold của SVM (6.png)  
+**Hình 7.6**: Biểu đồ Training vs Validation Accuracy per Fold của Random Forest (8.png)  
+**Hình 7.7**: Biểu đồ Training vs Validation Accuracy per Fold của Machine Learning Ensemble (10.png)
+
+**Hình 7.8**: So sánh hiệu suất Logistic Regression vs PhoBERT (16.png)
+
+Khi so sánh trực tiếp, khoảng cách giữa PhoBERT và Random Forest (mô hình mạnh nhất trong nhóm Machine Learning) đạt hơn 3 điểm phần trăm ở cả Accuracy và F1-Score — một khoảng cách rất đáng kể trong lĩnh vực Xử lý Ngôn ngữ Tự nhiên.
+
+### 7.4. Thảo luận
+
+Kết quả thực nghiệm một lần nữa khẳng định rằng các mô hình truyền thống (Machine Learning) dù ổn định, dễ triển khai và tiết kiệm tài nguyên vẫn bị giới hạn bởi đặc trưng tĩnh (Bag-of-Words). Ngược lại, PhoBERT với kiến trúc Transformer hiện đại đã phá vỡ “semantic ceiling” của tiếng Việt, mang lại hiệu suất vượt trội và khả năng áp dụng thực tế cao nhất.
+
+Sự thành công của PhoBERT không chỉ nằm ở các con số thống kê mà còn ở giá trị thực tiễn: hỗ trợ giảng viên và nhà trường phát hiện sớm, chính xác và kịp thời các vấn đề về chất lượng giảng dạy, chương trình đào tạo cũng như cơ sở vật chất. Đây chính là nền tảng quan trọng để xây dựng quy trình cải tiến liên tục (Continuous Improvement) trong giáo dục đại học Việt Nam.
+
+*(Tiếp theo là phần 8. Kết luận và Hướng phát triển)*
