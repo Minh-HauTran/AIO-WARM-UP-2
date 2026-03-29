@@ -1,71 +1,97 @@
-**KIẾN TRÚC HỆ THỐNG PHÂN TÍCH CẢM XÚC PHẢN HỒI CỦA SINH VIÊN VIỆT NAM**  
+***PHÂN TÍCH CẢM XÚC PHẢN HỒI CỦA SINH VIÊN VIỆT NAM***
 **(Vietnamese Student Sentiment Analysis)**
 ## 1. Introduction
 
 ### 1.1. Giới thiệu bài toán
 
-Trong bối cảnh toàn cầu hóa và sự cạnh tranh ngày càng gay gắt giữa các cơ sở giáo dục đại học, việc đảm bảo và nâng cao chất lượng đào tạo đã trở thành mục tiêu chiến lược. Các hệ thống khảo sát định lượng truyền thống (thang Likert) chỉ cung cấp cái nhìn tổng quan, trong khi phản hồi dạng văn bản tự do lại chứa đựng thông tin phong phú về mong muốn, sự thất vọng và trân trọng của sinh viên đối với phương pháp giảng dạy, thái độ giảng viên, nội dung chương trình và cơ sở vật chất.
+Trong bối cảnh toàn cầu hóa giáo dục và sự cạnh tranh ngày càng khốc liệt giữa các cơ sở đào tạo đại học, việc nâng cao chất lượng giảng dạy và đáp ứng nhu cầu của người học đã trở thành mục tiêu chiến lược then chốt. Các hệ thống khảo sát định lượng truyền thống (thang Likert) chỉ cung cấp cái nhìn tổng quát về mức độ hài lòng, trong khi phản hồi dạng văn bản tự do của sinh viên lại chứa đựng nguồn thông tin phong phú, chi tiết và sâu sắc về phương pháp giảng dạy, thái độ của giảng viên, nội dung chương trình học cũng như điều kiện cơ sở vật chất.
 
-Tuy nhiên, khối lượng phản hồi văn bản thường lên đến hàng chục nghìn mẫu mỗi năm tại các trường lớn, khiến việc phân tích thủ công trở nên tốn kém thời gian và dễ phát sinh sai lệch chủ quan. Sự ra đời của kỹ thuật Khai phá Dữ liệu Văn bản (Text Mining) và Phân tích Cảm xúc (Sentiment Analysis) đã mở ra giải pháp tự động hóa hiệu quả. Bài toán “Vietnamese Student Sentiment Analysis” nhằm xây dựng hệ thống Trí tuệ Nhân tạo có khả năng đọc hiểu, phân tích và phân loại cảm xúc từ nhận xét tiếng Việt của sinh viên, hỗ trợ lãnh đạo nhà trường và giảng viên đưa ra quyết định điều chỉnh kịp thời.
+Tuy nhiên, khối lượng phản hồi văn bản tại các trường đại học lớn thường đạt hàng chục nghìn, thậm chí hàng trăm nghìn mẫu mỗi năm. Việc phân tích thủ công không chỉ tiêu tốn thời gian và nguồn lực hành chính mà còn dễ dẫn đến sai lệch do định kiến chủ quan của con người. Trước thách thức này, các kỹ thuật Khai phá Dữ liệu Văn bản (Text Mining) và Phân tích Cảm xúc (Sentiment Analysis) đã mở ra giải pháp tự động hóa hiệu quả và khoa học.
+
+Bài toán **Vietnamese Student Sentiment Analysis** được đặt ra với mục tiêu cốt lõi là xây dựng một hệ thống Trí tuệ Nhân tạo có khả năng tự động đọc hiểu, phân tích và phân loại cảm xúc từ các nhận xét bằng tiếng Việt của sinh viên. Hệ thống không chỉ hỗ trợ giảng viên và lãnh đạo nhà trường nắm bắt nhanh chóng xu hướng phản hồi mà còn cung cấp cơ sở dữ liệu đáng tin cậy để xây dựng quy trình cải tiến liên tục (Continuous Improvement) trong giáo dục đại học Việt Nam.
 
 ### 1.2. Mô hình hóa bài toán: Input và Output
 
-Bài toán được mô hình hóa dưới dạng phân loại cấp độ câu (Sentence-level Classification).
+Bài toán được mô hình hóa dưới dạng **phân loại cấp độ câu (Sentence-level Classification)** với cấu trúc ánh xạ rõ ràng:
 
-- **Input**: Đoạn văn bản nhận xét tiếng Việt (có thể chứa từ ghép, dấu thanh, lỗi chính tả, emoji).
-- **Output**: Véc-tơ phân phối xác suất thuộc ba lớp:
-  - **Positive** (tích cực): khen ngợi, hài lòng.
-  - **Neutral** (trung lập): góp ý xây dựng, không biểu lộ cảm xúc rõ.
-  - **Negative** (tiêu cực): phàn nàn, thất vọng.
+- **Input**: Đoạn văn bản nhận xét tiếng Việt có độ dài biến thiên, chứa các đặc trưng ngôn ngữ phức tạp của tiếng Việt (từ ghép, dấu thanh, lỗi chính tả, emoji, cách viết mạng xã hội).
+- **Output**: Véc-tơ phân phối xác suất thuộc ba lớp cảm xúc:
+  - **Positive** (tích cực): khen ngợi, hài lòng, động viên.
+  - **Neutral** (trung lập): góp ý xây dựng, nhận xét khách quan, không biểu lộ cảm xúc rõ rệt.
+  - **Negative** (tiêu cực): phàn nàn, phê phán, thể hiện sự thất vọng.
 
-Hệ thống chuyển đổi văn bản thô thành véc-tơ số học, sau đó ánh xạ sang không gian nhãn thông qua hàm mất mát được tối ưu hóa.
+Hệ thống chuyển đổi văn bản thô thành véc-tơ số học thông qua các lớp tiền xử lý và vectorization, sau đó ánh xạ sang không gian nhãn thông qua hàm mất mát được tối ưu hóa trong quá trình huấn luyện.
+
+**Hình 1.1**: Sơ đồ tổng quát luồng xử lý từ SQ đến các cấp độ Trí tuệ Nhân tạo ![](img/18.png)
+
 
 ## 2. Ý nghĩa, Các công trình liên quan và Sự tiến hóa của cấu trúc thuật toán
 
-### 2.1. Sơ đồ cấu trúc đánh giá chất lượng và sự tiến hóa của Trí tuệ Nhân tạo
+### 2.1. Ý nghĩa khoa học và thực tiễn
 
-Phản hồi của sinh viên là dữ liệu cốt lõi đo lường Chất lượng Dịch vụ (Service Quality – SQ). Để xử lý khối lượng dữ liệu lớn này, các phương pháp Trí tuệ Nhân tạo đã tiến hóa theo thứ tự:
+**Ý nghĩa khoa học**: Nghiên cứu góp phần bổ sung kho tài nguyên NLP tiếng Việt, đặc biệt trong lĩnh vực phân tích cảm xúc giáo dục – một hướng còn hạn chế so với tiếng Anh. Việc áp dụng thành công các mô hình Transformer hiện đại (PhoBERT) trên dữ liệu thực tế khẳng định khả năng khái quát hóa cao của các mô hình pre-trained trong ngôn ngữ đơn lập có cấu trúc phức tạp.
+
+**Ý nghĩa thực tiễn**: Hệ thống hỗ trợ trực tiếp giảng viên và nhà trường:
+- Phát hiện sớm các vấn đề về chất lượng giảng dạy và cơ sở vật chất.
+- Cải thiện chương trình đào tạo dựa trên dữ liệu phản hồi thời gian thực.
+- Nâng cao chỉ số hài lòng của sinh viên (student satisfaction index), góp phần thúc đẩy chuyển đổi số trong giáo dục đại học Việt Nam.
+
+### 2.2. Sự tiến hóa của cấu trúc thuật toán
+
+Phản hồi của sinh viên là dữ liệu cốt lõi đo lường **Chất lượng Dịch vụ (Service Quality – SQ)**. Để xử lý khối lượng dữ liệu lớn và phi cấu trúc này, các phương pháp Trí tuệ Nhân tạo đã tiến hóa theo thứ tự rõ ràng:
 
 **SQ → AI → Machine Learning → Deep Learning → Reinforcement Learning**
 
-![Sơ đồ cấu trúc đánh giá chất lượng và sự tiến hóa của Trí tuệ Nhân tạo](img/1-Hinh1.png)  
-*Hình 2.1: Sơ đồ luồng ứng dụng từ SQ qua các cấp độ Trí tuệ Nhân tạo*
+**Hình 2.1**: Sơ đồ tiến hóa các cấp độ Trí tuệ Nhân tạo ![](img/18.png)
 
-### 2.2. Phân tích ưu và nhược điểm
+### 2.3. Phân tích ưu và nhược điểm của các hướng tiếp cận
 
-| Hệ thống Thuật toán       | Ưu điểm cốt lõi                              | Nhược điểm chính                                      |
-|---------------------------|----------------------------------------------|-------------------------------------------------------|
-| Machine Learning (ML)     | Tốc độ nhanh, tài nguyên thấp, minh bạch cao (white-box) | Phụ thuộc feature engineering, không nắm ngữ cảnh dài |
+| Hệ thống Thuật toán       | Ưu điểm cốt lõi                                      | Nhược điểm chính                                      |
+|---------------------------|------------------------------------------------------|-------------------------------------------------------|
+| Machine Learning (ML)     | Tốc độ nhanh, tài nguyên thấp, minh bạch cao (white-box) | Phụ thuộc feature engineering, không nắm bắt ngữ cảnh dài |
 | Deep Learning (DL)        | Tự động trích xuất đặc trưng, xử lý ngữ cảnh hai chiều | Yêu cầu dữ liệu lớn, chi phí tính toán cao, black-box |
-| Reinforcement Learning (RL) | Tối ưu chuỗi quyết định                     | Phức tạp và không cần thiết cho bài toán phân loại tĩnh |
+| Reinforcement Learning (RL) | Tối ưu chuỗi quyết định dài hạn                     | Phức tạp, không cần thiết cho bài toán phân loại tĩnh |
 
-### 2.3. Lý do lựa chọn Random Forest làm baseline mạnh và PhoBERT làm mô hình chính
+### 2.4. Lý do lựa chọn PhoBERT làm mô hình chính
 
-Random Forest được chọn làm baseline mạnh nhờ khả năng kháng nhiễu và giảm variance thông qua ensemble. Tuy nhiên, PhoBERT (Transformer) được lựa chọn làm mô hình sản xuất cuối cùng vì vượt trội về khả năng nắm bắt ngữ nghĩa tiếng Việt, đạt hiệu suất State-of-the-Art.
+Random Forest được chọn làm baseline mạnh nhờ khả năng kháng nhiễu và giảm variance thông qua ensemble. Tuy nhiên, **PhoBERT (Transformer)** được lựa chọn làm mô hình sản xuất cuối cùng vì vượt trội về khả năng nắm bắt ngữ nghĩa tiếng Việt, đạt hiệu suất State-of-the-Art (SOTA) và duy trì độ ổn định cao trên dữ liệu thực tế.
 
----
+**Hình 2.2**: WordCloud của các từ khóa phổ biến trong nhận xét ![](img/1.png)
+
 
 ## 3. Phân tích Khám phá và Tiền xử lý Dữ liệu (Processing Data - EDA)
 
 ### 3.1. Tổng quan dữ liệu UIT-VSFC
 
-Dữ liệu được lấy từ bộ UIT-VSFC gồm 16.175 mẫu. Phân phối nhãn ban đầu: Positive ~49.7 %, Negative ~46.0 %, Neutral ~4.3 %. Sau oversampling, ba lớp đạt cân bằng.
+Dữ liệu được lấy từ bộ **UIT-VSFC (Vietnamese Students’ Feedback Corpus)** gồm 16.175 mẫu nhận xét. Phân phối nhãn ban đầu:
 
-### 3.2. Đường ống tiền xử lý ngôn ngữ
+- Positive: ~49.7 %
+- Negative: ~46.0 %
+- Neutral: ~4.3 %
 
-Quá trình bao gồm bốn giai đoạn: làm sạch văn bản cơ bản, chuẩn hóa tiếng Việt (`underthesea.text_normalize`), tách từ (`word_tokenize` với underscore), và vectorization/tokenization cho Transformer (`max_length = 256`).
+**Hình 3.1**: Biểu đồ phân bố nhãn cảm xúc và chủ đề ![](img/3.png)
 
-![WordCloud](img/4-Hinh1.png)  
-*Hình 3.1: WordCloud Visualization*
+Sau kỹ thuật oversampling, ba lớp đạt sự cân bằng gần như tuyệt đối:
 
-![Phân bố độ dài câu](img/4-Hinh2.png)  
-*Hình 3.2: Distribution of sentence lengths*
+**Hình 3.2**: Biểu đồ phân bố nhãn sau oversampling ![](img/4.png)
 
-![Phân bố nhãn và topic](img/4-Hinh3.png)  
-*Hình 3.3: Distribution of Labels and Topics*
+### 3.2. Phân tích độ dài câu và WordCloud
 
-![Phân bố sau oversampling](img/4-Hinh4.png)  
-*Hình 3.4: Distribution after Oversampling*
+**Hình 3.3**: Phân bố độ dài câu ![](img/2.png) – Phần lớn nhận xét có độ dài dưới 100 từ, phù hợp cho việc padding/truncation ở max_length = 256.
+
+**Hình 3.4**: WordCloud các từ khóa phổ biến ![](img/1.png) – Các cụm từ nổi bật: “giảng viên”, “dạy”, “nhiệt tình”, “dễ hiểu”, “sinh viên”, “thầy/cô”.
+
+### 3.3. Đường ống tiền xử lý ngôn ngữ
+
+Quá trình tiền xử lý bao gồm bốn giai đoạn chính:
+1. Làm sạch văn bản cơ bản (lowercase, loại emoji, giảm ký tự lặp, chuẩn hóa dấu câu).
+2. Chuẩn hóa tiếng Việt (`underthesea.text_normalize`).
+3. Tách từ (`underthesea.word_tokenize` với định dạng underscore để giữ từ ghép).
+4. Vectorization / Tokenization cho Transformer (`max_length = 256`).
+
+**Hình 3.5**: KMeans Clustering sau PCA ![](img/13.png) – Minh họa trực quan các cụm chủ đề trong dữ liệu.
+
+Các bước trên đảm bảo dữ liệu đầu vào sạch, chuẩn hóa và sẵn sàng cho cả hai nhánh Machine Learning và Deep Learning/Transformer.
 
 
 ## 4. Data Preparation & Feature Engineering:
