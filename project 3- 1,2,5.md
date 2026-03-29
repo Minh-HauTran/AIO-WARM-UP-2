@@ -1,4 +1,4 @@
-# Báo cáo Nghiên cứu Khoa học: Kiến trúc Hệ thống Phân tích Cảm xúc Phản hồi của Sinh viên Việt Nam (Vietnamese Student Sentiment Analysis)
+Kiến trúc Hệ thống Phân tích Cảm xúc Phản hồi của Sinh viên Việt Nam (Vietnamese Student Sentiment Analysis)
 
 ## 1. Introduction
 
