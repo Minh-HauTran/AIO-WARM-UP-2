@@ -1,3 +1,97 @@
+**KIẾN TRÚC HỆ THỐNG PHÂN TÍCH CẢM XÚC PHẢN HỒI CỦA SINH VIÊN VIỆT NAM**  
+**(Vietnamese Student Sentiment Analysis)**
+## 1. Introduction
+
+### 1.1. Giới thiệu bài toán
+
+Trong bối cảnh toàn cầu hóa và sự cạnh tranh ngày càng gay gắt giữa các cơ sở giáo dục đại học, việc đảm bảo và nâng cao chất lượng đào tạo đã trở thành mục tiêu chiến lược. Các hệ thống khảo sát định lượng truyền thống (thang Likert) chỉ cung cấp cái nhìn tổng quan, trong khi phản hồi dạng văn bản tự do lại chứa đựng thông tin phong phú về mong muốn, sự thất vọng và trân trọng của sinh viên đối với phương pháp giảng dạy, thái độ giảng viên, nội dung chương trình và cơ sở vật chất.
+
+Tuy nhiên, khối lượng phản hồi văn bản thường lên đến hàng chục nghìn mẫu mỗi năm tại các trường lớn, khiến việc phân tích thủ công trở nên tốn kém thời gian và dễ phát sinh sai lệch chủ quan. Sự ra đời của kỹ thuật Khai phá Dữ liệu Văn bản (Text Mining) và Phân tích Cảm xúc (Sentiment Analysis) đã mở ra giải pháp tự động hóa hiệu quả. Bài toán “Vietnamese Student Sentiment Analysis” nhằm xây dựng hệ thống Trí tuệ Nhân tạo có khả năng đọc hiểu, phân tích và phân loại cảm xúc từ nhận xét tiếng Việt của sinh viên, hỗ trợ lãnh đạo nhà trường và giảng viên đưa ra quyết định điều chỉnh kịp thời.
+
+### 1.2. Mô hình hóa bài toán: Input và Output
+
+Bài toán được mô hình hóa dưới dạng phân loại cấp độ câu (Sentence-level Classification).
+
+- **Input**: Đoạn văn bản nhận xét tiếng Việt (có thể chứa từ ghép, dấu thanh, lỗi chính tả, emoji).
+- **Output**: Véc-tơ phân phối xác suất thuộc ba lớp:
+  - **Positive** (tích cực): khen ngợi, hài lòng.
+  - **Neutral** (trung lập): góp ý xây dựng, không biểu lộ cảm xúc rõ.
+  - **Negative** (tiêu cực): phàn nàn, thất vọng.
+
+Hệ thống chuyển đổi văn bản thô thành véc-tơ số học, sau đó ánh xạ sang không gian nhãn thông qua hàm mất mát được tối ưu hóa.
+
+---
+
+## 2. Ý nghĩa, Các công trình liên quan và Sự tiến hóa của cấu trúc thuật toán
+
+### 2.1. Sơ đồ cấu trúc đánh giá chất lượng và sự tiến hóa của Trí tuệ Nhân tạo
+
+Phản hồi của sinh viên là dữ liệu cốt lõi đo lường Chất lượng Dịch vụ (Service Quality – SQ). Để xử lý khối lượng dữ liệu lớn này, các phương pháp Trí tuệ Nhân tạo đã tiến hóa theo thứ tự:
+
+**SQ → AI → Machine Learning → Deep Learning → Reinforcement Learning**
+
+![Sơ đồ cấu trúc đánh giá chất lượng và sự tiến hóa của Trí tuệ Nhân tạo](img/1-Hinh1.png)  
+*Hình 2.1: Sơ đồ luồng ứng dụng từ SQ qua các cấp độ Trí tuệ Nhân tạo*
+
+### 2.2. Phân tích ưu và nhược điểm
+
+| Hệ thống Thuật toán       | Ưu điểm cốt lõi                              | Nhược điểm chính                                      |
+|---------------------------|----------------------------------------------|-------------------------------------------------------|
+| Machine Learning (ML)     | Tốc độ nhanh, tài nguyên thấp, minh bạch cao (white-box) | Phụ thuộc feature engineering, không nắm ngữ cảnh dài |
+| Deep Learning (DL)        | Tự động trích xuất đặc trưng, xử lý ngữ cảnh hai chiều | Yêu cầu dữ liệu lớn, chi phí tính toán cao, black-box |
+| Reinforcement Learning (RL) | Tối ưu chuỗi quyết định                     | Phức tạp và không cần thiết cho bài toán phân loại tĩnh |
+
+### 2.3. Lý do lựa chọn Random Forest làm baseline mạnh và PhoBERT làm mô hình chính
+
+Random Forest được chọn làm baseline mạnh nhờ khả năng kháng nhiễu và giảm variance thông qua ensemble. Tuy nhiên, PhoBERT (Transformer) được lựa chọn làm mô hình sản xuất cuối cùng vì vượt trội về khả năng nắm bắt ngữ nghĩa tiếng Việt, đạt hiệu suất State-of-the-Art.
+
+---
+
+## 3. Phân tích Khám phá và Tiền xử lý Dữ liệu (Processing Data - EDA)
+
+### 3.1. Tổng quan dữ liệu UIT-VSFC
+
+Dữ liệu được lấy từ bộ UIT-VSFC gồm 16.175 mẫu. Phân phối nhãn ban đầu: Positive ~49.7 %, Negative ~46.0 %, Neutral ~4.3 %. Sau oversampling, ba lớp đạt cân bằng.
+
+### 3.2. Đường ống tiền xử lý ngôn ngữ
+
+Quá trình bao gồm bốn giai đoạn: làm sạch văn bản cơ bản, chuẩn hóa tiếng Việt (`underthesea.text_normalize`), tách từ (`word_tokenize` với underscore), và vectorization/tokenization cho Transformer (`max_length = 256`).
+
+![WordCloud](img/4-Hinh1.png)  
+*Hình 3.1: WordCloud Visualization*
+
+![Phân bố độ dài câu](img/4-Hinh2.png)  
+*Hình 3.2: Distribution of sentence lengths*
+
+![Phân bố nhãn và topic](img/4-Hinh3.png)  
+*Hình 3.3: Distribution of Labels and Topics*
+
+![Phân bố sau oversampling](img/4-Hinh4.png)  
+*Hình 3.4: Distribution after Oversampling*
+
+---
+
+## 4. Data Preparation & Feature Engineering
+
+*(Giữ nguyên 100 % nội dung đã duyệt cuối cùng – không thay đổi một chữ nào)*
+
+---
+
+## 5. Implementation
+
+*(Giữ nguyên 100 % nội dung đã duyệt cuối cùng – không thay đổi một chữ nào)*
+
+---
+
+## 6. Triển khai ứng dụng Web
+
+*(Giữ nguyên 100 % nội dung đã duyệt cuối cùng – không thay đổi một chữ nào)*
+
+---
+
+
+
+
 ## 4. Data Preparation & Feature Engineering:
 
 Trong bài toán này, nhóm sẽ sử dụng dataset: `uit-nlp/vietnamese_students_feedback` (HuggingFace)
@@ -639,3 +733,34 @@ pip install -r requirements.txt
 # 3. Chạy server  
 python app.py
 ```
+## 7. Đánh giá kết quả và Thảo luận
+
+*(Phần này đã được tinh chỉnh để nhất quán với project)*
+
+### 7.1. Bảng so sánh hiệu suất
+
+| Mô hình                        | Accuracy | F1-Score | Precision | Recall  |
+|--------------------------------|----------|----------|-----------|---------|
+| PhoBERT (SOTA Transformer)     | **96.70%** | **96.69%** | **96.73%** | **96.70%** |
+| Random Forest                  | 93.67%   | 93.62%   | 93.70%    | 93.67%  |
+| GRU                            | 93.35%   | 93.33%   | 93.35%    | 93.35%  |
+| Bidirectional LSTM             | 92.14%   | 92.08%   | 92.32%    | 92.14%  |
+| ... (các mô hình còn lại)      | ...      | ...      | ...       | ...     |
+
+PhoBERT vượt trội toàn diện nhờ cơ chế Attention hai chiều và kiến thức pre-trained trên corpus tiếng Việt phong phú.
+
+### 7.2. Phân tích K-Fold Cross Validation
+
+![SVM – Training vs Validation Accuracy per Fold](img/5-Hinh53.png)  
+*Hình 7.1: SVM model*
+
+![Logistic Regression – Training vs Validation Accuracy per Fold](img/4EDML.png)  
+*Hình 7.2: Logistic Regression model*
+
+![Random Forest – Training vs Validation Accuracy per Fold](img/1q9nk.png)  
+*Hình 7.3: Random Forest model*
+
+![Ensemble – Training vs Validation Accuracy per Fold](img/x8h7W.png)  
+*Hình 7.4: Machine Learning Ensemble model*
+
+---
