@@ -22,8 +22,6 @@ Bài toán được mô hình hóa dưới dạng **phân loại cấp độ câ
 
 Hệ thống chuyển đổi văn bản thô thành véc-tơ số học thông qua các lớp tiền xử lý và vectorization, sau đó ánh xạ sang không gian nhãn thông qua hàm mất mát được tối ưu hóa trong quá trình huấn luyện.
 
-**Hình 1.1**: Sơ đồ tổng quát luồng xử lý từ SQ đến các cấp độ Trí tuệ Nhân tạo ![](img/18.png)
-
 
 ## 2. Ý nghĩa, Các công trình liên quan và Sự tiến hóa của cấu trúc thuật toán
 
