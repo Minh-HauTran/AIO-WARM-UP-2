@@ -737,8 +737,8 @@ python app.py
 
 Tất cả các chỉ số đều được tính theo chế độ **weighted average** nhằm phản ánh chính xác sự phân bố của ba lớp cảm xúc. Đặc biệt, với dữ liệu ban đầu có sự mất cân bằng nghiêm trọng (lớp Neutral chỉ chiếm khoảng 4,3 %), **F1-Score** được coi là thước đo quan trọng nhất vì nó cân bằng giữa Precision và Recall, giúp tránh tình trạng mô hình thiên vị về các lớp đa số.
 
-**Hình 7.1**: Biểu đồ phân bố nhãn cảm xúc ban đầu và chủ đề (3.png)  
-**Hình 7.2**: Biểu đồ phân bố nhãn sau khi oversampling (4.png)
+**Hình 7.1**: Biểu đồ phân bố nhãn cảm xúc ban đầu và chủ đề ![](img/3.png)  
+**Hình 7.2**: Biểu đồ phân bố nhãn sau khi oversampling ![](img/4.png)
 
 ### 7.2. Bảng so sánh hiệu suất tổng thể
 
